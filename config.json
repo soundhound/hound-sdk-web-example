@@ -1,0 +1,12 @@
+{
+  
+  "clientId": "YOUR_CLIENT_ID",
+  "clientKey": "YOUR_CLIENT_KEY",
+  
+  "port": 3446,
+
+  "https": false,
+  "sslKeyFile": "server.key",
+  "sslCrtFile": "server.crt"  
+
+}

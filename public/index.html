@@ -1,0 +1,260 @@
+<html>
+
+  <head>
+    <script src="js/houndify.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.css">
+  </head>
+
+  <body>
+
+    <div class="ui center aligned basic segment container">
+      <h2 class="ui block basic header">Houndify JavaScript SDK Demo</h2>
+      <form id="form" class="ui form" action="javascript:void(0);">
+
+        <div class="ui action big labeled fluid input field">
+          <div class="ui icon basic label button" onclick="onMicrophoneClick()">
+            <i id="voiceIcon" class="unmute big icon"></i>
+          </div>
+          <input id="query" type="text" placeholder="Click on a microphone icon or type in your query" />
+          <button id="textSearchButton" class="ui icon button" onclick="initTextRequest()"> 
+             <i class="search big icon"></i>
+          </button>
+        </div>
+
+        <div class="ui field" >
+          <label class="ui label" for="file" >Or upload a recorded voice query from a file</label>
+          <input type="file" id="file" name="file" onchange="onFileUpload()" />
+        </div>
+
+        <div id="status" class="ui info message">   
+          Click on microphone icon or type in the text query.
+        </div>
+
+        <div class="ui field" hidden>
+          <label>Response object</label>
+          <textarea id="responseJSON"></textarea>
+        </div>
+        <div class="ui field" hidden>
+          <label>Search info object</label>
+          <textarea id="infoJSON"></textarea>
+        </div>
+      </form>
+    </div>
+
+    <script> 
+      //HTML ELEMENTS FOR DISPLAYING RESPONSE AND INFO JSON's
+      var responseElt = document.getElementById("responseJSON");
+      var infoElt = document.getElementById("infoJSON");
+      var statusElt = document.getElementById("status");
+      var transcriptElt = document.getElementById("query");
+
+      var clientID = "YOUR_CLIENT_ID";
+      var conversationState = null;
+      var voiceRequest = null;
+
+      var recorder = new Houndify.AudioRecorder();
+      recorder.on('start', function() {  
+        //Initialize VoiceRequest
+        voiceRequest = initVoiceRequest(recorder.sampleRate);
+        document.getElementById("voiceIcon").className = "selected radio icon big red";
+      });
+
+      recorder.on('data', function(data) {
+        voiceRequest.write(data);
+      });
+
+      recorder.on('end', function() {
+        voiceRequest.end();
+        statusElt.innerText = "Stopped recording. Waiting for response...";
+        document.getElementById("voiceIcon").className = "unmute big icon";
+        document.getElementById("textSearchButton").disabled = false;
+        document.getElementById("query").readOnly = false;
+      });
+
+      recorder.on('error', function(error) {
+        voiceRequest.abort();
+        statusElt.innerText = "Error: " + error;
+        document.getElementById("voiceIcon").className = "unmute big icon";
+        document.getElementById("textSearchButton").disabled = false;
+        document.getElementById("query").readOnly = false;
+      });
+      
+
+      function initTextRequest() {
+        responseElt.parentNode.hidden = true;
+        infoElt.parentNode.hidden = true;
+
+        var queryString = document.getElementById('query').value;
+        statusElt.innerText = "Sending text request...";
+
+        //Initialize TextRequest
+        var textRequest = new Houndify.TextRequest({
+          //Text query
+          query: queryString,
+
+          //Your Houndify Client ID
+          clientId: clientID, 
+
+          //For testing environment you might want to authenticate on frontend without Node.js server. 
+          //In that case you may pass in your Houndify Client Key instead of "authURL".
+          //clientKey: "YOUR_CLIENT_KEY",
+
+          //Otherwise you need to create an endpoint on your server
+          //for handling the authentication.
+          //See SDK's server-side method HoundifyExpress.createAuthenticationHandler().
+          authURL: "/houndifyAuth",
+
+          //REQUEST INFO JSON
+          //See https://houndify.com/reference/RequestInfo
+          requestInfo: { 
+            UserID: "test_user",
+            Latitude: 37.388309, 
+            Longitude: -121.973968
+          },
+
+          //Pass the current ConversationState stored from previous queries
+          //See https://www.houndify.com/docs#conversation-state
+          conversationState: conversationState,
+
+          //You need to create an endpoint on your server
+          //for handling the authentication and proxying 
+          //text search http requests to Houndify backend
+          //See SDK's server-side method HoundifyExpress.createTextProxyHandler().
+          proxy: {
+            method: 'POST',
+            url: "/textSearchProxy",
+            // headers: {}
+            // ... More proxy options will be added as needed
+          },
+          
+          //Response and error handlers
+          onResponse: onResponse,
+          onError: onError
+        });
+      }
+
+      function initVoiceRequest(sampleRate) {
+        responseElt.parentNode.hidden = true;
+        infoElt.parentNode.hidden = true;
+        
+        var voiceRequest = new Houndify.VoiceRequest({
+          //Your Houndify Client ID
+          clientId: clientID,
+
+          //For testing environment you might want to authenticate on frontend without Node.js server. 
+          //In that case you may pass in your Houndify Client Key instead of "authURL".
+          //clientKey: "YOUR_CLIENT_KEY",
+
+          //Otherwise you need to create an endpoint on your server
+          //for handling the authentication.
+          //See SDK's server-side method HoundifyExpress.createAuthenticationHandler().
+          authURL: "/houndifyAuth",
+
+          //REQUEST INFO JSON
+          //See https://houndify.com/reference/RequestInfo
+          requestInfo: { 
+            UserID: "test_user",
+            Latitude: 37.388309, 
+            Longitude: -121.973968
+          },
+
+          //Pass the current ConversationState stored from previous queries
+          //See https://www.houndify.com/docs#conversation-state
+          conversationState: conversationState,
+
+          //Sample rate of input audio
+          sampleRate: sampleRate,
+
+          //Enable Voice Activity Detection
+          //Default: true
+          enableVAD: true,
+          
+          //Partial transcript, response and error handlers
+          onTranscriptionUpdate: onTranscriptionUpdate,
+          onResponse: function(response, info) {
+            recorder.stop();
+            onResponse(response, info);
+          },
+          onError: function(err, info) {
+            recorder.stop();
+            onError(err, info);
+          }
+        });
+
+        return voiceRequest;
+      }
+
+
+      function onMicrophoneClick() {
+        if (recorder && recorder.isRecording()) {
+          recorder.stop();
+          return;
+        }
+
+        recorder.start();
+
+        statusElt.innerText = "Streaming voice request...";
+        document.getElementById("voiceIcon").className = "loading circle notched icon big";
+        document.getElementById("textSearchButton").disabled = true;
+        document.getElementById("query").readOnly = true;  
+      }
+
+      function onFileUpload() {
+        var reader = new FileReader();
+        reader.onload = function() {  
+          //In browsers only you can also upload and decode 
+          //audio file using decodeArrayBuffer() method
+          //Stream 8/16 kHz mono 16-bit little-endian PCM samples 
+          //in Int16Array() chunks to backend
+          var arrayBuffer = reader.result;
+          Houndify.decodeAudioData(arrayBuffer, function(err, result) {
+            statusElt.innerText = "Streaming audio from file...";
+            voiceRequest = initVoiceRequest(result.sampleRate);
+            voiceRequest.write(result.audioData);
+            voiceRequest.end();
+          });
+
+          statusElt.innerText = "Decoding audio from file...";
+        };
+
+        var file = document.getElementById("file").files[0];
+        reader.readAsArrayBuffer(file);
+      }
+
+
+      //Fires after server responds with Response JSON
+      //Info object contains useful information about the completed request
+      //See https://houndify.com/reference/HoundServer
+      function onResponse(response, info) {
+        if (response.AllResults && response.AllResults.length) {
+          //Pick and store appropriate ConversationState from the results. 
+          //This example takes the default one from the first result.
+          conversationState = response.AllResults[0].ConversationState;
+        }
+        
+        statusElt.innerText = "Received response.";
+        responseElt.parentNode.hidden = false;
+        responseElt.value = response.stringify(undefined, 2);
+        infoElt.parentNode.hidden = false;
+        infoElt.value = JSON.stringify(info, undefined, 2);
+      }
+
+      //Fires if error occurs during the request
+      function onError(err, info) {
+        statusElt.innerText = "Error: " + JSON.stringify(err);
+        responseElt.parentNode.hidden = true;
+        infoElt.parentNode.hidden = false;
+        infoElt.value = JSON.stringify(info, undefined, 2);
+      }
+
+      //Fires every time backend sends a speech-to-text 
+      //transcript of a voice query
+      //See https://houndify.com/reference/HoundPartialTranscript
+      function onTranscriptionUpdate(transcript) {
+        transcriptElt.value = transcript.PartialTranscript;
+      }
+    </script>
+
+  </body>
+
+</html>
