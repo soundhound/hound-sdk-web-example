@@ -1,1 +1,0 @@
-window.Houndify = require('houndify');
