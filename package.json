@@ -1,10 +1,19 @@
 {
+  "scripts": {
+    "prestart": "browserify ./node_modules/houndify/index.js --standalone Houndify > public/js/houndify.js",
+    "start": "node server.js"
+  },
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.18.3",
+    "bufferutil": "^4.0.1",
     "express": "^4.16.3",
     "houndify": "2.3.3",
     "minimist": "^1.2.0",
+    "utf-8-validate": "^5.0.2",
     "wav": "^1.0.0"
+  },
+  "devDependencies": {
+    "browserify": "^16.2.3"
   }
 }

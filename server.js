@@ -21,10 +21,6 @@ var publicFolder = argv.public || 'public';
 app.use(express.static(path.join(__dirname, publicFolder)));
 
 
-app.get('/houndifyAuth', (req, res, next) => {
-  console.dir('here');
-  next();
-})
 //authenticates requests
 app.get('/houndifyAuth', Houndify.HoundifyExpress.createAuthenticationHandler({ 
   clientId:  config.clientId, 
