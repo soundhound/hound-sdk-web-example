@@ -1,6 +1,5 @@
 {
   "scripts": {
-    "prestart": "browserify ./node_modules/houndify/index.js --standalone Houndify > public/js/houndify.js",
     "start": "node server.js"
   },
   "license": "MIT",
