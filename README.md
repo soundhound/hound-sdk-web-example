@@ -9,7 +9,9 @@ Feel free to explore the code to get a feel for how to use the Houndify Web SDK.
 ## Installation
 1. Clone this repository.
 2. run `npm install`
-3. To start the server and website, run `npm start`, or see below for how to run the example command line tools.
+3. Add your Client ID and Client Key into the `config.json` file.
+4. Add your Client ID into index.html (line 69) if you are using the browser.
+5. To start the server and website, run `npm start`, or see below for how to run the example command line tools.
 
 ## Repository Structure and Usage
 
@@ -19,19 +21,19 @@ This file contains some configuration information for the example project. Open 
 **WHENEVER** you change your clientId here, also change it in `public/index.html`. You can easily find it there by searching for the following  text
 >[INSERT CLIENT ID BELOW]
 
-Please remember that if you'd like to use https, you must create a ssl key and certificate, and add their locations here.
+Please remember that if you'd like to use HTTPS, you must create a SSL key and certificate, and add their locations here.
 
 ### public
 This is the sample website we've created.
+
+
 #### index.html
-Here, you'll find an example webpage. There's a script tag where we use the Houndify API to make requests and process responses. At the top of the page, we include the houndify web sdk from `js/houndify.js`.
+Here, you'll find an example webpage. There's a script tag where we use the Houndify API to make requests and process responses. At the top of the page, we include the houndify web sdk from unpkg:
 
-#### js/houndify.js
-In your own app, if you are not using bundlers such as browserify or webpack, you may download the JS SDK from [here](https://www.houndify.com/sdks) and add it like this.
+```
+<script src="https://unpkg.com/houndify@3.1.1/dist/houndify.js"></script>
+```
 
-In this example's case, we pull houndify directly from npm and package a version locally. Just in case you're interested, this helps us:
-1. Always keep our examples up to date by using npm.
-2. Test our examples more effectively.
 
 ### server.js
 This library does not directly make requests using the SDK, but sets up some important routes which allow the website to work, as we discussed [here.](https://npmjs.com/package/houndify) You can run it using
