@@ -7,6 +7,7 @@ Here, we've prepared an example **website** and **server** using the SDK. This r
 Feel free to explore the code to get a feel for how to use the Houndify Web SDK. If you're looking to do some quick prototyping for your own voice enabled project, this is a great place to start!
 
 ## Installation
+
 1. Clone this repository.
 2. run `npm install`
 3. Add your Client ID and Client Key into the `config.json` file.
@@ -16,14 +17,17 @@ Feel free to explore the code to get a feel for how to use the Houndify Web SDK.
 ## Repository Structure and Usage
 
 ### config.json
-This file contains some configuration information for the example project. Open it and enter your clientId/clientKey from your houndify account. 
 
-**WHENEVER** you change your clientId here, also change it in `public/index.html`. You can easily find it there by searching for the following  text
->[INSERT CLIENT ID BELOW]
+This file contains some configuration information for the example project. Open it and enter your clientId/clientKey from your houndify account.
+
+**WHENEVER** you change your clientId here, also change it in `public/index.html`. You can easily find it there by searching for the following text
+
+> [INSERT CLIENT ID BELOW]
 
 Please remember that if you'd like to use HTTPS, you must create a SSL key and certificate, and add their locations here.
 
 ### public
+
 This is the sample website we've created.
 
 
@@ -36,21 +40,29 @@ Here, you'll find an example webpage. There's a script tag where we use the Houn
 
 
 ### server.js
+
 This library does not directly make requests using the SDK, but sets up some important routes which allow the website to work, as we discussed [here.](https://npmjs.com/package/houndify) You can run it using
+
 ```bash
 npm start
 ```
+
 It will run on whatever port was set up in `config.json`, 3446 by default. Use this rather than starting the server directly, it runs some configuration in the background.
 
 ### node-client-text.js & node-client-voice.js
+
 These are server-side implementations of Houndify's text and voice query features. If you've read the [Web SDK Tutorial.](https://npmjs.com/package/houndify) (which we highly recommend you do), you'll see that these files use the API we discussed.
 
 You can run these using the following.
+
 #### Sending a text query.
+
 ```bash
 node node-client-text.js --query "What is the weather like in New York?"
 ```
+
 #### Sending a voice query from a saved WAV file.
+
 ```bash
 node node-client-voice.js --audio ./path/to/audio.wav
 ```
