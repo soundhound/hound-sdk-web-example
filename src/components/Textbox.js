@@ -1,7 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import Houndify from "houndify";
-
+import styled from "styled-components";
+import { motion } from "framer-motion";
 function makeTextRequest({
   query,
   clientId,
@@ -10,9 +11,11 @@ function makeTextRequest({
   authenticationEndpoint,
   onResponse,
   onError,
+  proxy,
+  clientKey
 }) {
   //Initialize TextRequest
-  var textRequest = new Houndify.TextRequest({
+  new Houndify.TextRequest({
     //Text query
     query,
 
@@ -21,7 +24,7 @@ function makeTextRequest({
 
     //For testing environment you might want to authenticate on frontend without Node.js server.
     //In that case you may pass in your Houndify Client Key instead of "authURL".
-    //clientKey: "YOUR_CLIENT_KEY",
+    clientKey,
 
     //Otherwise you need to create an endpoint on your server
     //for handling the authentication.
@@ -40,18 +43,29 @@ function makeTextRequest({
     //for handling the authentication and proxying
     //text search http requests to Houndify backend
     //See SDK's server-side method HoundifyExpress.createTextProxyHandler().
-    proxy: {
-      method: "POST",
-      url: "/textSearchProxy",
-      // headers: {}
-      // ... More proxy options will be added as needed
-    },
+    proxy,
 
     //Response and error handlers
     onResponse: onResponse,
-    onError: onError,
+    onError: onError
   });
 }
+
+const InputBox = styled.input`
+  border: 1px solid #f2f2f2;
+  padding: 0.5em 1em;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  border-top-left-radius: 0.5em;
+  border-bottom-left-radius: 0.5em;
+`;
+
+const InputButton = styled(motion.button)`
+  background: #111;
+  color: white;
+  padding: 0.5em 1em;
+  border-top-right-radius: 0.5em;
+  border-bottom-right-radius: 0.5em;
+`;
 
 function Textbox({
   onQueryChange,
@@ -63,6 +77,8 @@ function Textbox({
   authenticationEndpoint,
   requestInfo,
   clientId,
+  clientKey,
+  proxy
 }) {
   function onHandleQuery(e) {
     e.preventDefault();
@@ -72,23 +88,30 @@ function Textbox({
       authenticationEndpoint,
       requestInfo,
       clientId,
+      clientKey,
+      proxy,
       onResponse,
-      onError,
+      onError
     });
   }
 
   return (
     <form>
-      <input
+      <InputBox
         type="text"
+        placeholder="Enter a text query"
         onChange={e => {
           onQueryChange(e.target.value);
         }}
         value={query}
-      ></input>
-      <button onClick={onHandleQuery} type="submit">
-        Make query
-      </button>
+      ></InputBox>
+      <InputButton
+        onClick={onHandleQuery}
+        type="submit"
+        whileHover={{ scale: 1.1 }}
+      >
+        →
+      </InputButton>
     </form>
   );
 }
@@ -96,7 +119,7 @@ function Textbox({
 Textbox.propTypes = {
   onQueryChange: PropTypes.func.isRequired,
   onClick: PropTypes.func.isRequired,
-  query: PropTypes.string.isRequired,
+  query: PropTypes.string.isRequired
 };
 
 export default Textbox;
