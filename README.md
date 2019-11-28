@@ -1,5 +1,7 @@
 # Hound SDK Web Official Example
 
+![screenshot](https://p59.f1.n0.cdn.getcloudapp.com/items/7Kuy4GyN/Screen+Shot+2019-11-28+at+3.53.46+PM.png?v=e1b369fc4ddfc6458ada2aad1271f68d)
+
 This repository provides examples using the [Houndify Web SDK](https://npmjs.com/package/houndify), which allows you to integrate Voice AI into your web, server, or React Native application.
 
 Here, we've prepared an example **website** and **server** using the SDK. This repo doesn't include a React Native demo in the interest of keeping the build process similar. If you're interested in using React Native, check [the houndify-react-native repository](https://npmjs.com/package/houndify-react-native) for more information.
@@ -11,7 +13,7 @@ Feel free to explore the code to get a feel for how to use the Houndify Web SDK.
 1. Clone this repository.
 2. run `npm install`
 3. Add your Client ID and Client Key into the `config.json` file.
-4. Add your Client ID into index.html (line 69) if you are using the browser.
+4. Add your Client ID into index.html (line 114) if you are using the browser.
 5. To start the server and website, run `npm start`, or see below for how to run the example command line tools.
 
 ## Repository Structure and Usage
@@ -30,14 +32,13 @@ Please remember that if you'd like to use HTTPS, you must create a SSL key and c
 
 This is the sample website we've created.
 
-
 #### index.html
+
 Here, you'll find an example webpage. There's a script tag where we use the Houndify API to make requests and process responses. At the top of the page, we include the houndify web sdk from unpkg:
 
 ```
 <script src="https://unpkg.com/houndify@3.1.1/dist/houndify.js"></script>
 ```
-
 
 ### server.js
 

@@ -12,34 +12,44 @@
   </head>
 
   <body class="bg-gray-100 min-h-screen">
-    <div class="m-auto max-w-3xl bg-white py-12 px-6 min-h-screen">
-      <h2 class="text-xl font-bold mb-6">Houndify JavaScript SDK Demo</h2>
+    <div class="m-auto max-w-3xl bg-white py-12 px-6">
+      <h2 class="text-3xl font-bold mb-6">Houndify JavaScript SDK Demo</h2>
       <p class="pb-2">
         This example demonstrates how to query the Houndify SDK using text and
         voice requests. The example is built in vanilla JavaScript and can be
         ported to other JavaScript frameworks.
       </p>
 
-      <h2 class="text-lg font-bold">Setup</h2>
+      <h2 class="text-lg font-bold mt-6">Setup</h2>
       <p class="pb-2">
         To setup this example, you need to add your Houndify Client ID into the
-        HTML file. You can get your free Client ID from
-        <a class="text-blue-500" href="https://houndify.com">houndify.com</a>.
-        Refer to the
+        HTML file. You can get your free Client ID by creating an account on
+        <a class="text-blue-500" href="https://houndify.com">www.houndify.com</a
+        >. Refer to the
         <a
           class="text-blue-500"
           href="https://github.com/soundhound/hound-sdk-web-example/blob/master/README.md"
           >README.md</a
         >
-        for more information
+        for more information.
       </p>
       <p class="pb-2">
         Once you have entered in your Client ID, click on the microphone to make
-        a voice query (ex: "What's the weather in Toronto"), or type it into the
-        input box and click on the search button.
+        a voice query (ex: <i>"What's the weather in Toronto"</i>), or type it
+        into the input box and click on the search button. You'll see a JSON
+        response in the <strong>Response JSON</strong> box below.
       </p>
+
+      <div id="status" class="bg-blue-100 text-blue-700 p-4 my-4 rounded">
+        <div class="text-xs font-bold text-blue-700">Status</div>
+        <p class="text-sm">
+          Click on the Mic and say a voice query, or type in the text query into
+          the input box.
+        </p>
+      </div>
+
       <form id="form" action="javascript:void(0);">
-        <div class="p-6 bg-gray-200 my-20 shadow-xl rounded">
+        <div class="p-6 bg-gray-200 my-12 shadow-xl rounded">
           <button
             id="voiceIcon"
             class="text-lg bg-gray-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-12 h-12"
@@ -76,17 +86,12 @@
           />
         </div>
 
-        <div id="status" class="bg-blue-100 text-blue-700 p-4 my-4 rounded">
-          Click on the Mic and say a voice query, or type in the text query into
-          the input box.
-        </div>
-
         <div class="flex mb-4">
           <div class="w-1/2 h-12">
-            <h5>Response object</h5>
+            <h5>Response JSON</h5>
             <textarea
               id="responseJSON"
-              class="w-full min-h-full font-mono text-xs"
+              class="w-full h-48 font-mono text-xs"
               placeholder="Make a query to view the response JSON here."
             ></textarea>
           </div>
@@ -94,7 +99,7 @@
             <h5>Search info object</h5>
             <textarea
               id="infoJSON"
-              class="w-full min-h-full font-mono text-xs"
+              class="w-full h-48 font-mono text-xs"
               placeholder="Make a query to view the search information JSON object here."
             ></textarea>
           </div>
@@ -104,19 +109,22 @@
 
     <script>
       //HTML ELEMENTS FOR DISPLAYING RESPONSE AND INFO JSON's
-      var responseElt = document.getElementById("responseJSON");
-      var infoElt = document.getElementById("infoJSON");
-      var statusElt = document.getElementById("status");
-      var transcriptElt = document.getElementById("query");
+      const responseElt = document.getElementById("responseJSON");
+      const infoElt = document.getElementById("infoJSON");
+      const statusElt = document.getElementById("status");
+      const transcriptElt = document.getElementById("query");
+      const voiceIcon = document.getElementById("voiceIcon");
 
-      var clientID = "YOUR_CLIENT_ID";
-      var conversationState = null;
-      var voiceRequest = null;
+      // UPDATE YOUR CLIENT ID HERE TO YOUR HOUNDIFY.COM CLIENT ID.
+      // > [INSERT CLIENT ID BELOW]
+      const clientID = "YOUR_CLIENT_ID";
+      let conversationState = null;
+      let voiceRequest = null;
 
-      var recorder = new Houndify.AudioRecorder();
+      const recorder = new Houndify.AudioRecorder();
       recorder.on("start", function() {
         //Initialize VoiceRequest
-        const voiceIcon = document.getElementById("voiceIcon");
+
         voiceRequest = initVoiceRequest(recorder.sampleRate);
         voiceIcon.classList.replace("bg-black", "bg-red-700");
       });
@@ -126,7 +134,6 @@
       });
 
       recorder.on("end", function() {
-        const voiceIcon = document.getElementById("voiceIcon");
         voiceRequest.end();
         statusElt.innerText = "Stopped recording. Waiting for response...";
 
@@ -136,7 +143,6 @@
       });
 
       recorder.on("error", function(error) {
-        const voiceIcon = document.getElementById("voiceIcon");
         voiceRequest.abort();
         statusElt.innerText = "Error: " + error;
         voiceIcon.classList.replace("bg-red-700", "bg-black");
@@ -148,11 +154,11 @@
         responseElt.parentNode.hidden = true;
         infoElt.parentNode.hidden = true;
 
-        var queryString = document.getElementById("query").value;
+        const queryString = document.getElementById("query").value;
         statusElt.innerText = "Sending text request...";
 
         //Initialize TextRequest
-        var textRequest = new Houndify.TextRequest({
+        const textRequest = new Houndify.TextRequest({
           //Text query
           query: queryString,
 
@@ -201,7 +207,7 @@
         responseElt.parentNode.hidden = true;
         infoElt.parentNode.hidden = true;
 
-        var voiceRequest = new Houndify.VoiceRequest({
+        const voiceRequest = new Houndify.VoiceRequest({
           //Your Houndify Client ID
           clientId: clientID,
 
@@ -257,21 +263,19 @@
         recorder.start();
 
         statusElt.innerText = "Streaming voice request...";
-        document
-          .getElementById("voiceIcon")
-          .classList.replace("bg-black", "bg-red-700");
+        voiceIcon.classList.replace("bg-black", "bg-red-700");
         document.getElementById("textSearchButton").disabled = true;
         document.getElementById("query").readOnly = true;
       }
 
       function onFileUpload() {
-        var reader = new FileReader();
+        const reader = new FileReader();
         reader.onload = function() {
           //In browsers only you can also upload and decode
           //audio file using decodeArrayBuffer() method
           //Stream 8/16 kHz mono 16-bit little-endian PCM samples
           //in Int16Array() chunks to backend
-          var arrayBuffer = reader.result;
+          const arrayBuffer = reader.result;
           Houndify.decodeAudioData(arrayBuffer, function(err, result) {
             statusElt.innerText = "Streaming audio from file...";
             voiceRequest = initVoiceRequest(result.sampleRate);
@@ -282,7 +286,7 @@
           statusElt.innerText = "Decoding audio from file...";
         };
 
-        var file = document.getElementById("file").files[0];
+        const file = document.getElementById("file").files[0];
         reader.readAsArrayBuffer(file);
       }
 
