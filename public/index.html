@@ -1,6 +1,6 @@
 <html>
   <head>
-    <script src="https://unpkg.com/houndify@3.1.1/dist/houndify.js"></script>
+    <script src="https://unpkg.com/houndify@3.1.2/dist/houndify.js"></script>
     <link
       href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css"
       rel="stylesheet"
@@ -117,23 +117,23 @@
 
       // UPDATE YOUR CLIENT ID HERE TO YOUR HOUNDIFY.COM CLIENT ID.
       // > [INSERT CLIENT ID BELOW]
-      const clientID = "YOUR_CLIENT_ID";
+      const clientID = "Z_6ap-283ONfJmjz1sZ2yw==";
       let conversationState = null;
       let voiceRequest = null;
 
       const recorder = new Houndify.AudioRecorder();
-      recorder.on("start", function() {
+      recorder.on("start", function () {
         //Initialize VoiceRequest
 
         voiceRequest = initVoiceRequest(recorder.sampleRate);
         voiceIcon.classList.replace("bg-black", "bg-red-700");
       });
 
-      recorder.on("data", function(data) {
+      recorder.on("data", function (data) {
         voiceRequest.write(data);
       });
 
-      recorder.on("end", function() {
+      recorder.on("end", function () {
         voiceRequest.end();
         statusElt.innerText = "Stopped recording. Waiting for response...";
 
@@ -142,7 +142,7 @@
         document.getElementById("query").readOnly = false;
       });
 
-      recorder.on("error", function(error) {
+      recorder.on("error", function (error) {
         voiceRequest.abort();
         statusElt.innerText = "Error: " + error;
         voiceIcon.classList.replace("bg-red-700", "bg-black");
@@ -179,7 +179,7 @@
           requestInfo: {
             UserID: "test_user",
             Latitude: 37.388309,
-            Longitude: -121.973968
+            Longitude: -121.973968,
           },
 
           //Pass the current ConversationState stored from previous queries
@@ -192,14 +192,14 @@
           //See SDK's server-side method HoundifyExpress.createTextProxyHandler().
           proxy: {
             method: "POST",
-            url: "/textSearchProxy"
+            url: "/textSearchProxy",
             // headers: {}
             // ... More proxy options will be added as needed
           },
 
           //Response and error handlers
           onResponse: onResponse,
-          onError: onError
+          onError: onError,
         });
       }
 
@@ -225,7 +225,7 @@
           requestInfo: {
             UserID: "test_user",
             Latitude: 37.388309,
-            Longitude: -121.973968
+            Longitude: -121.973968,
           },
 
           //Pass the current ConversationState stored from previous queries
@@ -241,14 +241,14 @@
 
           //Partial transcript, response and error handlers
           onTranscriptionUpdate: onTranscriptionUpdate,
-          onResponse: function(response, info) {
+          onResponse: function (response, info) {
             recorder.stop();
             onResponse(response, info);
           },
-          onError: function(err, info) {
+          onError: function (err, info) {
             recorder.stop();
             onError(err, info);
-          }
+          },
         });
 
         return voiceRequest;
@@ -270,13 +270,13 @@
 
       function onFileUpload() {
         const reader = new FileReader();
-        reader.onload = function() {
+        reader.onload = function () {
           //In browsers only you can also upload and decode
           //audio file using decodeArrayBuffer() method
           //Stream 8/16 kHz mono 16-bit little-endian PCM samples
           //in Int16Array() chunks to backend
           const arrayBuffer = reader.result;
-          Houndify.decodeAudioData(arrayBuffer, function(err, result) {
+          Houndify.decodeAudioData(arrayBuffer, function (err, result) {
             statusElt.innerText = "Streaming audio from file...";
             voiceRequest = initVoiceRequest(result.sampleRate);
             voiceRequest.write(result.audioData);
