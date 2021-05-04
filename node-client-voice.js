@@ -19,7 +19,7 @@ function compressAndStreamWAV() {
 
   reader.on('format', function (format) {
     voiceRequest = new Houndify.VoiceRequest({
-      clientId:  config.clientId, 
+      clientId:  config.clientId,
       clientKey: config.clientKey,
 
       sampleRate: format.sampleRate,
@@ -29,7 +29,7 @@ function compressAndStreamWAV() {
       //see https://houndify.com/reference/RequestInfo
       requestInfo: {
         UserID: "test_user",
-        Latitude: 37.388309, 
+        Latitude: 37.388309,
         Longitude: -121.973968
       },
 
@@ -44,7 +44,7 @@ function compressAndStreamWAV() {
       onError: function(err, info) {
         console.log(err);
       }
-      
+
     });
   });
 
@@ -54,8 +54,8 @@ function compressAndStreamWAV() {
     voiceRequest.write(view);
   });
 
-  reader.on('end', function() { 
-    voiceRequest.end(); 
+  reader.on('end', function() {
+    voiceRequest.end();
   });
 
   file.pipe(reader);
@@ -65,7 +65,7 @@ function compressAndStreamWAV() {
 // Stream full WAV/Opus/Speex audio file to Houndify backend
 function streamAudioFile(file) {
   var voiceRequest = new Houndify.VoiceRequest({
-      clientId:  config.clientId, 
+      clientId:  config.clientId,
       clientKey: config.clientKey,
 
       convertAudioToSpeex: false,
@@ -75,7 +75,7 @@ function streamAudioFile(file) {
       //see https://houndify.com/reference/RequestInfo
       requestInfo: {
         UserID: "test_user",
-        Latitude: 37.388309, 
+        Latitude: 37.388309,
         Longitude: -121.973968
       },
 
@@ -96,21 +96,21 @@ function streamAudioFile(file) {
     voiceRequest.write(chunk);
   });
 
-  file.on('end', function() { 
-    voiceRequest.end(); 
+  file.on('end', function() {
+    voiceRequest.end();
   });
 }
 
 
 
-var audioFile = argv.audio || path.join('test_audio', 'whatistheweatherthere.wav');
+var audioFile = argv.audio || path.join('test_audio', 'whatistheweatherlikeintoronto.wav');
 var audioFilePath = path.join(__dirname, audioFile);
 var file = fs.createReadStream(audioFilePath);
 
 
 if (audioFile.endsWith(".wav") || audioFile.endsWith(".wave")) {
   compressAndStreamWAV(file);
-} 
+}
 else {
   streamAudioFile(file);
 }
