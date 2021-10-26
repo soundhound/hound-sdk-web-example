@@ -7,7 +7,7 @@
     "body-parser": "^1.18.3",
     "bufferutil": "^4.0.1",
     "express": "^4.16.3",
-    "houndify": "^3.1.8",
+    "houndify": "^3.1.11",
     "minimist": "^1.2.5",
     "utf-8-validate": "^5.0.2",
     "wav": "^1.0.0"

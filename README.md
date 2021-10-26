@@ -13,7 +13,7 @@ Feel free to explore the code to get a feel for how to use the Houndify Web SDK.
 1. Clone this repository.
 2. run `npm install`
 3. Add your Client ID and Client Key into the `config.json` file.
-4. Add your Client ID into index.html (line 114) if you are using the browser.
+4. Add your Client ID into index.html if you are using the browser. (Search for: [INSERT CLIENT ID BELOW])
 5. To start the server and website, run `npm start`, or see below for how to run the example command line tools.
 
 ## Repository Structure and Usage
