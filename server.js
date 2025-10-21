@@ -20,6 +20,11 @@ var port = config.port || 8446;
 var publicFolder = argv.public || 'public';
 app.use(express.static(path.join(__dirname, publicFolder)));
 
+// Serve Houndify directly from node_modules at js/houndify.js path
+app.get('/js/houndify.js', function(req, res) {
+  res.sendFile(path.join(__dirname, 'node_modules/houndify/dist/houndify.js'));
+});
+
 
 //authenticates requests
 app.get('/houndifyAuth', Houndify.HoundifyExpress.createAuthenticationHandler({ 
